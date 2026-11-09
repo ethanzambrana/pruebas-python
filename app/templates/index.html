@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestor de categorías</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body class="bg-light">
+    <main class="container py-5" style="max-width: 760px;">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h1 class="h3 mb-2">Gestor de categorías</h1>
+          <p class="text-secondary">Frontend: Bootstrap · Backend: FastAPI</p>
+
+          <form id="category-form" class="row g-2 mb-4">
+            <div class="col-sm-9">
+              <label class="visually-hidden" for="nombre">Nombre de la categoría</label>
+              <input id="nombre" class="form-control" required placeholder="Ej.: Tecnología">
+            </div>
+            <div class="col-sm-3 d-grid">
+              <button class="btn btn-primary" type="submit">Agregar</button>
+            </div>
+          </form>
+
+          <p id="mensaje" class="small" aria-live="polite"></p>
+          <ul id="lista-categorias" class="list-group">
+            {% for categoria in categorias %}
+            <li class="list-group-item">{{ categoria.id }} — {{ categoria.nombre }}</li>
+            {% else %}
+            <li class="list-group-item text-secondary">Todavía no hay categorías.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const form = document.querySelector('#category-form');
+      const input = document.querySelector('#nombre');
+      const message = document.querySelector('#mensaje');
+      const list = document.querySelector('#lista-categorias');
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const nombre = input.value.trim();
+        if (!nombre) return;
+
+        const response = await fetch(`/categorias?nombre=${encodeURIComponent(nombre)}`, {
+          method: 'POST'
+        });
+        if (!response.ok) {
+          message.textContent = 'No se pudo crear la categoría.';
+          message.className = 'small text-danger';
+          return;
+        }
+
+        const categoria = await response.json();
+        list.querySelector('.text-secondary')?.remove();
+        const item = document.createElement('li');
+        item.className = 'list-group-item';
+        item.textContent = `${categoria.id} — ${categoria.nombre}`;
+        list.appendChild(item);
+        input.value = '';
+        message.textContent = 'Categoría agregada correctamente.';
+        message.className = 'small text-success';
+      });
+    </script>
+  </body>
+</html>

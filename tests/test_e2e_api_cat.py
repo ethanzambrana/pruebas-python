@@ -14,7 +14,12 @@ def test_e2e_full_category_lifecycle():
     3. Revisa la lista para confirmar la creación.
     """
     cat_name = f"E2E Cat {int(time.time())}" # Nombre único
-    # 1. Paso de usuario: Intenta obtener todas las categorías
+    # 1. Paso de usuario: abre la pantalla web de la aplicación.
+    response_home = client.get("/")
+    assert response_home.status_code == 200
+    assert "Gestor de categorías" in response_home.text
+
+    # 2. Paso de usuario: intenta obtener todas las categorías.
     response_get_initial = client.get("/categorias")
     initial_list = response_get_initial.json()
     initial_count = len(initial_list)
@@ -22,14 +27,14 @@ def test_e2e_full_category_lifecycle():
     print(json.dumps(initial_list, indent=4))
     print(f"Número inicial de categorías: {initial_count}")
     print("----------------------------------------------------------")
-    # 2. Paso de usuario: Crea una nueva categoría
+    # 3. Paso de usuario: crea una nueva categoría mediante la API.
     response_post = client.post("/categorias", params={"nombre": cat_name})
     assert response_post.status_code == 200
     categoria_creada = response_post.json()
     print(f"\n--- E2E: CATEGORÍA CREADA ---")
     print(json.dumps(categoria_creada, indent=4))
     print("------------------------------")
-    # 3. Paso de usuario: Verifica la lista final
+    # 4. Paso de usuario: verifica la lista final.
     response_get_final = client.get("/categorias")
     final_list = response_get_final.json()
     print("\n--- E2E: LISTA FINAL DE CATEGORÍAS (Tras crear) ---")
