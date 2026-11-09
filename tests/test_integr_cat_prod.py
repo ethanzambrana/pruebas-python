@@ -20,7 +20,7 @@ def test_integration_create_cat_and_product():
     (API + CRUD + JSON I/O real).
     """
     # 1. Crear una nueva Categoría (Endpoint 1, toque el disco real)
-    response_cat = client.post("/categorias", params={"nombre": "Jardinería Integracion"})
+    response_cat = client.post("/categorias", params={"nombre": "Jardinería Integración"})
     assert response_cat.status_code == 200
     categoria_creada = response_cat.json()
     categoria_id = categoria_creada["id"]
